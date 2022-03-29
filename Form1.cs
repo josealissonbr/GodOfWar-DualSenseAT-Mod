@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Shared;
 using System.Threading;
+using Memory;
 
 namespace ETS2_DualSenseAT_Mod
 {
@@ -24,6 +25,10 @@ namespace ETS2_DualSenseAT_Mod
         static IPEndPoint endPoint;
 
         static bool Server_Initialized = false; 
+
+        static bool TouchRGBAnim = true;
+
+        private Mem meme = new Mem();
         static bool Connect()
         {
             try
@@ -55,14 +60,15 @@ namespace ETS2_DualSenseAT_Mod
             statusLbl.Text = "Status: Ready!";
         }
 
+
         private void Form1_Load(object sender, EventArgs e)
         {
-            Process[] pname = Process.GetProcessesByName("bio4");
-            if (pname.Length == 0)
-            {
-                MessageBox.Show("God Of War isn't running, please open game first!", "DualSense AT Mod");
-                Application.Exit();
-            }
+            //Process[] pname = Process.GetProcessesByName("GoW");
+            //if (pname.Length == 0)
+            //{
+            //    MessageBox.Show("God Of War isn't running, please open game first!", "DualSense AT Mod");
+            //    Application.Exit();
+            //}
 
             if (!Connect())
             {
@@ -70,10 +76,33 @@ namespace ETS2_DualSenseAT_Mod
                 Application.Exit();
             }
 
+            int PID = meme.GetProcIdFromName("gow");
 
-            timer1.Enabled = true;
-            
-           // gameStaticTriggerValues();
+            if (PID > 0)
+            {
+                timer1.Enabled = true;
+
+                //gameStaticTriggerValues();
+                //meme.OpenProcess(PID);
+            }
+            else
+            {
+                MessageBox.Show("God Of War isn't running, please open game first!", "DualSense AT Mod");
+                Application.Exit();
+            }
+
+            //meme.WriteMemory("GoW.exe+023A7BB0,388,220,120,170,18,0,18", "float", "100");
+
+            // int health = memLib.ReadInt("GoW.exe+01278340,388,8");
+            //memLib.WriteMemory("GoW.exe+01278340,388,8", "int", "50");
+            //float health = meme.ReadFloat("GoW.exe+023A7BB0,388,220,120,170,18,0,18");
+            //label1.Text = health.ToString();
+
+            //timer1.Enabled = true;
+
+            //memory.Enabled = true;
+
+            // gameStaticTriggerValues();
         }
 
         static int iStep = 0;
@@ -90,7 +119,7 @@ namespace ETS2_DualSenseAT_Mod
                 if (iStep == 0)
                 {
                     p.instructions[0].type = InstructionType.RGBUpdate;
-                    p.instructions[0].parameters = new object[] { controllerIndex, 237, 61, 7 };
+                    p.instructions[0].parameters = new object[] { controllerIndex, 27, 27, 27 };
                     
                     // PLAYER LED 1-5 true/false state
                     p.instructions[1].type = InstructionType.PlayerLED;
@@ -101,7 +130,7 @@ namespace ETS2_DualSenseAT_Mod
                 else if (iStep == 1)
                 {
                     p.instructions[0].type = InstructionType.RGBUpdate;
-                    p.instructions[0].parameters = new object[] { controllerIndex, 252, 0, 0 };
+                    p.instructions[0].parameters = new object[] { controllerIndex, 169, 169, 169 };
                     
                     // PLAYER LED 1-5 true/false state
                     p.instructions[1].type = InstructionType.PlayerLED;
@@ -112,7 +141,7 @@ namespace ETS2_DualSenseAT_Mod
                 else if (iStep == 2)
                 {
                     p.instructions[0].type = InstructionType.RGBUpdate;
-                    p.instructions[0].parameters = new object[] { controllerIndex, 148, 22, 0 };
+                    p.instructions[0].parameters = new object[] { controllerIndex, 242, 243, 244 };
                     
                     // PLAYER LED 1-5 true/false state
                     p.instructions[1].type = InstructionType.PlayerLED;
@@ -123,7 +152,7 @@ namespace ETS2_DualSenseAT_Mod
                 else if (iStep == 3)
                 {
                     p.instructions[0].type = InstructionType.RGBUpdate;
-                    p.instructions[0].parameters = new object[] { controllerIndex, 237, 61, 7 };
+                    p.instructions[0].parameters = new object[] { controllerIndex, 146, 41, 41 };
                    
                     // PLAYER LED 1-5 true/false state
                     p.instructions[1].type = InstructionType.PlayerLED;
@@ -135,7 +164,7 @@ namespace ETS2_DualSenseAT_Mod
                 else if (iStep == 4)
                 {
                     p.instructions[0].type = InstructionType.RGBUpdate;
-                    p.instructions[0].parameters = new object[] { controllerIndex, 148, 22, 0 };
+                    p.instructions[0].parameters = new object[] { controllerIndex, 102, 0, 0 };
                     
                     // PLAYER LED 1-5 true/false state
                     p.instructions[1].type = InstructionType.PlayerLED;
@@ -158,15 +187,16 @@ namespace ETS2_DualSenseAT_Mod
                 p.instructions = new Instruction[4];
 
                 p.instructions[0].type = InstructionType.RGBUpdate;
-                p.instructions[0].parameters = new object[] { controllerIndex, 119, 3, 252 };
+                p.instructions[0].parameters = new object[] { controllerIndex, 199, 24, 24 };
 
                 // PLAYER LED 1-5 true/false state
                 p.instructions[1].type = InstructionType.PlayerLED;
-                p.instructions[1].parameters = new object[] { controllerIndex, true, false, false, false, false };
+                p.instructions[1].parameters = new object[] { controllerIndex, false, false, false, false, false };
 
                 Send(p);
 
                 timer1.Enabled = false;
+                TouchAnim.Enabled = true;
                 gameStaticTriggerValues();
             }
 
@@ -181,10 +211,13 @@ namespace ETS2_DualSenseAT_Mod
             p.instructions = new Instruction[4];
 
             p.instructions[0].type = InstructionType.TriggerUpdate;
-            p.instructions[0].parameters = new object[] { controllerIndex, Trigger.Right, TriggerMode.CustomTriggerValue, CustomTriggerValueMode.VibratePulseAB, 61, 255, 255, 5, 67, 119, 0 };
+            p.instructions[0].parameters = new object[] { controllerIndex, Trigger.Right, TriggerMode.SemiAutomaticGun, 2, 7, 8 };
 
             p.instructions[1].type = InstructionType.TriggerUpdate;
             p.instructions[1].parameters = new object[] { controllerIndex, Trigger.Left, TriggerMode.Bow, 0, 1, 8, 8};
+            
+            p.instructions[2].type = InstructionType.RGBUpdate;
+            p.instructions[2].parameters = new object[] { controllerIndex, 102, 0, 0 };
 
             Send(p);
 
@@ -216,6 +249,61 @@ namespace ETS2_DualSenseAT_Mod
         private void timer1_Tick(object sender, EventArgs e)
         {
             InitializationEffect();
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            TouchRGBAnim = checkBox1.Checked;
+        }
+
+        private void TouchAnim_Tick(object sender, EventArgs e)
+        {
+            
+            if (!TouchRGBAnim)
+                return;
+
+            if (!backgroundWorker1.IsBusy)
+                backgroundWorker1.RunWorkerAsync();
+            
+        }
+
+        static int LED_Step = 0;
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Packet p = new Packet();
+
+            int controllerIndex = 0;
+
+            p.instructions = new Instruction[4];
+
+            if (LED_Step == 0)
+            {
+                p.instructions[0].type = InstructionType.RGBUpdate;
+                p.instructions[0].parameters = new object[] { controllerIndex, 255, 0, 0 };
+
+                LED_Step = 1;
+            }
+            else
+            {
+                if (LED_Step == 1)
+                {
+                    p.instructions[0].type = InstructionType.RGBUpdate;
+                    p.instructions[0].parameters = new object[] { controllerIndex, 166, 0, 0 };
+
+                    LED_Step = 0;
+                }
+            }
+
+            Thread.Sleep(950);
+            Send(p);
+        }
+
+        private void memory_Tick(object sender, EventArgs e)
+        {
+           // memLib.WriteMemory("GoW.exe+01278340,388,8", "float", "50");
+            //memLib.WriteMemory("GoW.exe+01278340,5B8,C8,8", "float", "2");
+            //float health = memLib.ReadInt("GoW.exe+01278340,5B8,C8,8");
+            //label1.Text = health.ToString();
         }
     }
 }
