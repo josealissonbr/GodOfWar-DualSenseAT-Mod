@@ -34,9 +34,9 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.TouchAnim = new System.Windows.Forms.Timer(this.components);
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.memory = new System.Windows.Forms.Timer(this.components);
+            this.label1 = new System.Windows.Forms.Label();
+            this.everyTick = new System.Windows.Forms.Timer(this.components);
+            this.seconThread = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -76,23 +76,29 @@
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // TouchAnim
+            // label1
             // 
-            this.TouchAnim.Tick += new System.EventHandler(this.TouchAnim_Tick);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(287, 165);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "label1";
             // 
-            // backgroundWorker1
+            // everyTick
             // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.everyTick.Tick += new System.EventHandler(this.everyTick_Tick);
             // 
-            // memory
+            // seconThread
             // 
-            this.memory.Tick += new System.EventHandler(this.memory_Tick);
+            this.seconThread.DoWork += new System.ComponentModel.DoWorkEventHandler(this.seconThread_DoWork);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(326, 184);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.statusLbl);
@@ -117,9 +123,9 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Timer TouchAnim;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private System.Windows.Forms.Timer memory;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Timer everyTick;
+        private System.ComponentModel.BackgroundWorker seconThread;
     }
 }
 

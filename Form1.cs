@@ -76,14 +76,14 @@ namespace ETS2_DualSenseAT_Mod
                 Application.Exit();
             }
 
-            int PID = meme.GetProcIdFromName("gow");
+            int PID = meme.GetProcIdFromName("GoW");
 
             if (PID > 0)
             {
                 timer1.Enabled = true;
 
                 //gameStaticTriggerValues();
-                //meme.OpenProcess(PID);
+                meme.OpenProcess(PID);
             }
             else
             {
@@ -93,16 +93,7 @@ namespace ETS2_DualSenseAT_Mod
 
             //meme.WriteMemory("GoW.exe+023A7BB0,388,220,120,170,18,0,18", "float", "100");
 
-            // int health = memLib.ReadInt("GoW.exe+01278340,388,8");
-            //memLib.WriteMemory("GoW.exe+01278340,388,8", "int", "50");
-            //float health = meme.ReadFloat("GoW.exe+023A7BB0,388,220,120,170,18,0,18");
-            //label1.Text = health.ToString();
-
-            //timer1.Enabled = true;
-
-            //memory.Enabled = true;
-
-            // gameStaticTriggerValues();
+            
         }
 
         static int iStep = 0;
@@ -196,7 +187,7 @@ namespace ETS2_DualSenseAT_Mod
                 Send(p);
 
                 timer1.Enabled = false;
-                TouchAnim.Enabled = true;
+                everyTick.Enabled = true;
                 gameStaticTriggerValues();
             }
 
@@ -256,17 +247,6 @@ namespace ETS2_DualSenseAT_Mod
             TouchRGBAnim = checkBox1.Checked;
         }
 
-        private void TouchAnim_Tick(object sender, EventArgs e)
-        {
-            
-            if (!TouchRGBAnim)
-                return;
-
-            if (!backgroundWorker1.IsBusy)
-                backgroundWorker1.RunWorkerAsync();
-            
-        }
-
         static int LED_Step = 0;
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -298,12 +278,129 @@ namespace ETS2_DualSenseAT_Mod
             Send(p);
         }
 
+        private void LowHealth()
+        {
+            if (iMaxSteps < 5)
+            {
+                Packet p = new Packet();
+
+                int controllerIndex = 0;
+                p.instructions = new Instruction[4];
+
+                if (iStep == 0)
+                {
+                    p.instructions[0].type = InstructionType.RGBUpdate;
+                    p.instructions[0].parameters = new object[] { controllerIndex, 252, 7, 3 };
+
+                    // PLAYER LED 1-5 true/false state
+                    p.instructions[1].type = InstructionType.PlayerLED;
+                    p.instructions[1].parameters = new object[] { controllerIndex, true, false, false, false, false };
+
+                    iStep = 1;
+                }
+                else if (iStep == 1)
+                {
+                    p.instructions[0].type = InstructionType.RGBUpdate;
+                    p.instructions[0].parameters = new object[] { controllerIndex, 166, 58, 58 };
+
+                    // PLAYER LED 1-5 true/false state
+                    p.instructions[1].type = InstructionType.PlayerLED;
+                    p.instructions[1].parameters = new object[] { controllerIndex, false, true, false, false, false };
+
+                    iStep = 2;
+                }
+                else if (iStep == 2)
+                {
+                    p.instructions[0].type = InstructionType.RGBUpdate;
+                    p.instructions[0].parameters = new object[] { controllerIndex, 150, 101, 101 };
+
+                    // PLAYER LED 1-5 true/false state
+                    p.instructions[1].type = InstructionType.PlayerLED;
+                    p.instructions[1].parameters = new object[] { controllerIndex, false, false, true, false, false };
+
+                    iStep = 3;
+                }
+                else if (iStep == 3)
+                {
+                    p.instructions[0].type = InstructionType.RGBUpdate;
+                    p.instructions[0].parameters = new object[] { controllerIndex, 107, 0, 0 };
+
+                    // PLAYER LED 1-5 true/false state
+                    p.instructions[1].type = InstructionType.PlayerLED;
+                    p.instructions[1].parameters = new object[] { controllerIndex, false, false, false, true, false };
+
+
+                    iStep = 4;
+                }
+                else if (iStep == 4)
+                {
+                    p.instructions[0].type = InstructionType.RGBUpdate;
+                    p.instructions[0].parameters = new object[] { controllerIndex, 38, 250, 5 };
+
+                    // PLAYER LED 1-5 true/false state
+                    p.instructions[1].type = InstructionType.PlayerLED;
+                    p.instructions[1].parameters = new object[] { controllerIndex, false, false, false, false, true };
+
+
+                    iStep = 0;
+                    iMaxSteps += +1;
+                }
+
+
+
+                Send(p);
+            }
+            else
+            {
+                Packet p = new Packet();
+
+                int controllerIndex = 0;
+                p.instructions = new Instruction[4];
+
+                p.instructions[0].type = InstructionType.RGBUpdate;
+                p.instructions[0].parameters = new object[] { controllerIndex, 199, 24, 24 };
+
+                // PLAYER LED 1-5 true/false state
+                p.instructions[1].type = InstructionType.PlayerLED;
+                p.instructions[1].parameters = new object[] { controllerIndex, false, false, false, false, false };
+
+                Send(p);
+            }
+        }
+
         private void memory_Tick(object sender, EventArgs e)
         {
-           // memLib.WriteMemory("GoW.exe+01278340,388,8", "float", "50");
-            //memLib.WriteMemory("GoW.exe+01278340,5B8,C8,8", "float", "2");
-            //float health = memLib.ReadInt("GoW.exe+01278340,5B8,C8,8");
-            //label1.Text = health.ToString();
+            
+        }
+
+        private void dualsense_triggers_DoWork(object sender, DoWorkEventArgs e)
+        {
+            LowHealth();
+        }
+
+        private void ShowLights_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+        }
+
+        private void everyTick_Tick(object sender, EventArgs e)
+        {
+            if (!seconThread.IsBusy)
+                seconThread.RunWorkerAsync();
+        }
+
+        private void seconThread_DoWork(object sender, DoWorkEventArgs e)
+        {
+            float health = meme.ReadFloat("GoW.exe+011AC280,9A0,30,40,8,388");
+
+            if (health < 20)
+            {
+                LowHealth();
+            }
+            else
+            {
+
+            }
         }
     }
 }
