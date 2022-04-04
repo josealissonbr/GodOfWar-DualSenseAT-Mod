@@ -15,16 +15,14 @@ using System.Windows.Forms;
 using Shared;
 using System.Threading;
 using Memory;
+using System.Runtime.InteropServices; // User32.dll (and dll import)
+using GodOfWar;
+using GodOfWar.EventListeners;
 
 namespace ETS2_DualSenseAT_Mod
 {
     public partial class Form1 : Form
     {
-
-        static UdpClient client;
-        static IPEndPoint endPoint;
-
-        static bool Server_Initialized = false; 
 
         static bool TouchRGBAnim = true;
 
@@ -33,24 +31,71 @@ namespace ETS2_DualSenseAT_Mod
         {
             try
             {
-                client = new UdpClient();
+                Session.client = new UdpClient();
                 var portNumber = File.ReadAllText(@"C:\Temp\DualSenseX\DualSenseX_PortNumber.txt");
-                endPoint = new IPEndPoint(Triggers.localhost, Convert.ToInt32(portNumber));
-                Server_Initialized = true;
+                Session.endPoint = new IPEndPoint(Triggers.localhost, Convert.ToInt32(portNumber));
+                Session.Server_Initialized = true;
+               // Server_Initialized = true;
                 return true;
             }catch(Exception ex)
             {
-                Server_Initialized = false;
+                Session.Server_Initialized = false;
+               // Server_Initialized = false;
                 return false;
             }
         }
 
+        private const UInt32 MOUSEEVENTF_LEFTDOWN = 0x0002;
+        private const UInt32 MOUSEEVENTF_LEFTUP = 0x0004;
+
+        [DllImport("user32.dll")]
+        private static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, uint dwExtraInf);
+
+        [DllImport("user32.dll")]
+        private static extern bool SetCursorPos(int x, int y);
+
+        private bool SearchPixel(string hexcode)
+        {
+            // Take an image from the screen
+            // Bitmap bitmap = new Bitmap(Screen.PrimaryScreen.Bounds.Width, Screen.PrimaryScreen.Bounds.Height); // Create an empty bitmap with the size of the current screen 
+
+            Bitmap bitmap = new Bitmap(SystemInformation.VirtualScreen.Width, SystemInformation.VirtualScreen.Height); // Create an empty bitmap with the size of all connected screen 
+
+            Graphics graphics = Graphics.FromImage(bitmap as Image); // Create a new graphics objects that can capture the screen
+
+            graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size); // Screenshot moment → screen content to graphics object
+
+            Color desiredPixelColor = ColorTranslator.FromHtml(hexcode);
+
+            // Go one to the right and then check from top to bottom every pixel (next round -> go one to right and go down again)
+            for (int x = 0; x < SystemInformation.VirtualScreen.Width; x++)
+            {
+                for (int y = 0; y < SystemInformation.VirtualScreen.Height; y++)
+                {
+                    // Get the current pixels color
+                    Color currentPixelColor = bitmap.GetPixel(x, y);
+
+                    // Finally compare the pixels hex color and the desired hex color (if they match we found a pixel)
+                    if (desiredPixelColor == currentPixelColor)
+                    {
+                        //Console.WriteLine("Found Pixel - Now set mouse cursor");
+                        //DoubleClickAtPosition(x, y);
+                        return true;
+                    }
+
+                }
+            }
+
+             //Console.WriteLine("Did not find pixel");
+            return false;
+        }
+
         static void Send(Packet data)
         {
-            if (!Server_Initialized)
+            if (!Session.Server_Initialized)
                 return;
             var RequestData = Encoding.ASCII.GetBytes(Triggers.PacketToJson(data));
-            client.Send(RequestData, RequestData.Length, endPoint);
+            Session.client.Send(RequestData, RequestData.Length, Session.endPoint);
         }
 
         public Form1()
@@ -63,6 +108,9 @@ namespace ETS2_DualSenseAT_Mod
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //PixelSearchWorker.RunWorkerAsync();
+            //EventsWorker.RunWorkerAsync();
+
             //Process[] pname = Process.GetProcessesByName("GoW");
             //if (pname.Length == 0)
             //{
@@ -188,7 +236,7 @@ namespace ETS2_DualSenseAT_Mod
 
                 timer1.Enabled = false;
                 everyTick.Enabled = true;
-                gameStaticTriggerValues();
+                //gameStaticTriggerValues();
             }
 
         }
@@ -387,6 +435,12 @@ namespace ETS2_DualSenseAT_Mod
         {
             if (!seconThread.IsBusy)
                 seconThread.RunWorkerAsync();
+
+            if (!PixelSearchWorker.IsBusy)
+                PixelSearchWorker.RunWorkerAsync();
+
+            if (!EventsWorker.IsBusy)
+                EventsWorker.RunWorkerAsync();
         }
 
         private void seconThread_DoWork(object sender, DoWorkEventArgs e)
@@ -401,6 +455,56 @@ namespace ETS2_DualSenseAT_Mod
             {
 
             }
+        }
+
+        private void PixelSearchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //Console.Write("Searching!");
+            PixelSearchWorker.RunWorkerAsync();
+        }
+
+        private void PixelSearchWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+           // Console.Write("Searching!");
+            if (SearchPixel("#AFA17D") && SearchPixel("#1C1C1C"))
+            {
+                Session.is_Paused = true;
+                Console.WriteLine("MENU PAUSE");
+
+            }
+            else
+            {
+                Session.is_Paused = false;
+                Console.WriteLine("MENU IS NOT IN PAUSE");
+            }
+            //SearchPixel("#E6CE92");
+           // SearchPixel("#E8D18E");
+            //SearchPixel("#CAA35C");
+        }
+
+        private void EventsWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+
+            EventsWorker.RunWorkerAsync();
+        }
+
+        private void EventsWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //If game is paused
+            if (Session.is_Paused)
+            {
+                //Console.WriteLine("Call menuPaused();");
+                MainEvents.menuPaused();
+
+            }
+            //If Game is not Paused.
+            else
+            {
+                //Console.WriteLine("Call AxeHold();");
+                MainEvents.AxeHold();
+            }
+
+
         }
     }
 }

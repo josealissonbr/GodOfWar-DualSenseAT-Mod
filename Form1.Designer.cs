@@ -36,7 +36,13 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.everyTick = new System.Windows.Forms.Timer(this.components);
+            this.PixelSearchWorker = new System.ComponentModel.BackgroundWorker();
+            this.EventsWorker = new System.ComponentModel.BackgroundWorker();
             this.seconThread = new System.ComponentModel.BackgroundWorker();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker3 = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -87,11 +93,41 @@
             // 
             // everyTick
             // 
+            this.everyTick.Interval = 5;
             this.everyTick.Tick += new System.EventHandler(this.everyTick_Tick);
+            // 
+            // PixelSearchWorker
+            // 
+            this.PixelSearchWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.PixelSearchWorker_DoWork);
+            this.PixelSearchWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.PixelSearchWorker_RunWorkerCompleted);
+            // 
+            // EventsWorker
+            // 
+            this.EventsWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.EventsWorker_DoWork);
+            this.EventsWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.EventsWorker_RunWorkerCompleted);
             // 
             // seconThread
             // 
             this.seconThread.DoWork += new System.ComponentModel.DoWorkEventHandler(this.seconThread_DoWork);
+            // 
+            // timer2
+            // 
+            this.timer2.Interval = 5;
+            this.timer2.Tick += new System.EventHandler(this.everyTick_Tick);
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.PixelSearchWorker_DoWork);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.PixelSearchWorker_RunWorkerCompleted);
+            // 
+            // backgroundWorker2
+            // 
+            this.backgroundWorker2.DoWork += new System.ComponentModel.DoWorkEventHandler(this.EventsWorker_DoWork);
+            this.backgroundWorker2.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.EventsWorker_RunWorkerCompleted);
+            // 
+            // backgroundWorker3
+            // 
+            this.backgroundWorker3.DoWork += new System.ComponentModel.DoWorkEventHandler(this.seconThread_DoWork);
             // 
             // Form1
             // 
@@ -124,8 +160,14 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label1;
+        private System.ComponentModel.BackgroundWorker PixelSearchWorker;
         private System.Windows.Forms.Timer everyTick;
+        private System.ComponentModel.BackgroundWorker EventsWorker;
         private System.ComponentModel.BackgroundWorker seconThread;
+        private System.Windows.Forms.Timer timer2;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
+        private System.ComponentModel.BackgroundWorker backgroundWorker3;
     }
 }
 
