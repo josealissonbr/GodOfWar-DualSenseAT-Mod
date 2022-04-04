@@ -27,6 +27,9 @@ namespace ETS2_DualSenseAT_Mod
         static bool TouchRGBAnim = true;
 
         private Mem meme = new Mem();
+
+        BackgroundWorker LowHealthWorker = new BackgroundWorker();
+
         static bool Connect()
         {
             try
@@ -108,6 +111,9 @@ namespace ETS2_DualSenseAT_Mod
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            LowHealthWorker.DoWork += MainEvents.LowHealth;
+            LowHealthWorker.RunWorkerCompleted += LowHealth_Completed;
             //PixelSearchWorker.RunWorkerAsync();
             //EventsWorker.RunWorkerAsync();
 
@@ -143,6 +149,8 @@ namespace ETS2_DualSenseAT_Mod
 
             
         }
+
+        
 
         static int iStep = 0;
         static int iMaxSteps = 0;
@@ -423,7 +431,7 @@ namespace ETS2_DualSenseAT_Mod
 
         private void dualsense_triggers_DoWork(object sender, DoWorkEventArgs e)
         {
-            LowHealth();
+            //LowHealth();
         }
 
         private void ShowLights_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -441,11 +449,13 @@ namespace ETS2_DualSenseAT_Mod
 
             if (!EventsWorker.IsBusy)
                 EventsWorker.RunWorkerAsync();
+            if (!LowHealthWorker.IsBusy)
+                LowHealthWorker.RunWorkerAsync();
         }
 
         private void seconThread_DoWork(object sender, DoWorkEventArgs e)
         {
-            float health = meme.ReadFloat("GoW.exe+011AC280,9A0,30,40,8,388");
+           /* float health = meme.ReadFloat("GoW.exe+011AC280,9A0,30,40,8,388");
 
             if (health < 20)
             {
@@ -454,8 +464,14 @@ namespace ETS2_DualSenseAT_Mod
             else
             {
 
-            }
+            }*/
         }
+
+        public void LowHealth_Completed(object sender, RunWorkerCompletedEventArgs e)
+        {
+            LowHealthWorker.RunWorkerAsync();
+        }
+
 
         private void PixelSearchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {

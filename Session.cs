@@ -20,6 +20,14 @@ namespace GodOfWar
 
         public static bool is_Paused = true;
 
-        public Mem meme = new Mem();
+        public static Mem meme = new Mem();
+    }
+
+    internal class GameData
+    {
+        public struct kratos 
+        {
+            public static int iHealth;
+        }
     }
 }
