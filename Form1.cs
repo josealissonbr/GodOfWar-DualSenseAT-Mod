@@ -134,7 +134,7 @@ namespace ETS2_DualSenseAT_Mod
 
             if (PID > 0)
             {
-                timer1.Enabled = true;
+               // timer1.Enabled = true;
 
                 //gameStaticTriggerValues();
                 meme.OpenProcess(PID);
@@ -242,8 +242,8 @@ namespace ETS2_DualSenseAT_Mod
 
                 Send(p);
 
-                timer1.Enabled = false;
-                everyTick.Enabled = true;
+               // timer1.Enabled = false;
+              //  everyTick.Enabled = true;
                 //gameStaticTriggerValues();
             }
 
@@ -441,16 +441,16 @@ namespace ETS2_DualSenseAT_Mod
 
         private void everyTick_Tick(object sender, EventArgs e)
         {
-            if (!seconThread.IsBusy)
-                seconThread.RunWorkerAsync();
+            //if (!seconThread.IsBusy)
+            //    seconThread.RunWorkerAsync();
 
-            if (!PixelSearchWorker.IsBusy)
-                PixelSearchWorker.RunWorkerAsync();
+            //if (!PixelSearchWorker.IsBusy)
+            //    PixelSearchWorker.RunWorkerAsync();
 
-            if (!EventsWorker.IsBusy)
-                EventsWorker.RunWorkerAsync();
-            if (!LowHealthWorker.IsBusy)
-                LowHealthWorker.RunWorkerAsync();
+            //if (!EventsWorker.IsBusy)
+            //    EventsWorker.RunWorkerAsync();
+            //if (!LowHealthWorker.IsBusy)
+            //    LowHealthWorker.RunWorkerAsync();
         }
 
         private void seconThread_DoWork(object sender, DoWorkEventArgs e)
@@ -476,7 +476,7 @@ namespace ETS2_DualSenseAT_Mod
         private void PixelSearchWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //Console.Write("Searching!");
-            PixelSearchWorker.RunWorkerAsync();
+            //PixelSearchWorker.RunWorkerAsync();
         }
 
         private void PixelSearchWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -501,7 +501,7 @@ namespace ETS2_DualSenseAT_Mod
         private void EventsWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
 
-            EventsWorker.RunWorkerAsync();
+           // EventsWorker.RunWorkerAsync();
         }
 
         private void EventsWorker_DoWork(object sender, DoWorkEventArgs e)
