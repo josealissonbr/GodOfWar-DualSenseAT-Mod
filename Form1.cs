@@ -97,8 +97,13 @@ namespace ETS2_DualSenseAT_Mod
         {
             if (!Session.Server_Initialized)
                 return;
+            //var RequestData = Encoding.ASCII.GetBytes(Triggers.PacketToJson(data))
+
             var RequestData = Encoding.ASCII.GetBytes(Triggers.PacketToJson(data));
             Session.client.Send(RequestData, RequestData.Length, Session.endPoint);
+            Session.TimeSent = DateTime.Now;
+
+            //Session.client.Send(RequestData, RequestData.Length, Session.endPoint);
         }
 
         public Form1()
@@ -114,6 +119,7 @@ namespace ETS2_DualSenseAT_Mod
 
             LowHealthWorker.DoWork += MainEvents.LowHealth;
             LowHealthWorker.RunWorkerCompleted += LowHealth_Completed;
+
             //PixelSearchWorker.RunWorkerAsync();
             //EventsWorker.RunWorkerAsync();
 
@@ -134,10 +140,10 @@ namespace ETS2_DualSenseAT_Mod
 
             if (PID > 0)
             {
-               // timer1.Enabled = true;
+                //timer1.Enabled = true;
 
-                //gameStaticTriggerValues();
-                meme.OpenProcess(PID);
+                gameStaticTriggerValues();
+                //meme.OpenProcess(PID);
             }
             else
             {
@@ -146,6 +152,7 @@ namespace ETS2_DualSenseAT_Mod
             }
 
             //meme.WriteMemory("GoW.exe+023A7BB0,388,220,120,170,18,0,18", "float", "100");
+            
 
             
         }
@@ -161,7 +168,7 @@ namespace ETS2_DualSenseAT_Mod
                 Packet p = new Packet();
 
                 int controllerIndex = 0;
-                p.instructions = new Instruction[4];
+                p.instructions = new Instruction[6];
 
                 if (iStep == 0)
                 {
@@ -242,7 +249,7 @@ namespace ETS2_DualSenseAT_Mod
 
                 Send(p);
 
-               // timer1.Enabled = false;
+                timer1.Enabled = false;
               //  everyTick.Enabled = true;
                 //gameStaticTriggerValues();
             }
@@ -521,6 +528,11 @@ namespace ETS2_DualSenseAT_Mod
             }
 
 
+        }
+
+        private void timer1_Tick_1(object sender, EventArgs e)
+        {
+            InitializationEffect();
         }
     }
 }

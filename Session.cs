@@ -13,6 +13,8 @@ namespace GodOfWar
     {
         public static UdpClient client;
         public static IPEndPoint endPoint;
+        public static DateTime TimeSent;
+
 
         public static bool Server_Initialized = false;
 
